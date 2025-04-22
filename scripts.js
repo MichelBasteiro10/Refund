@@ -6,6 +6,7 @@ const category = document.querySelector(`#category`);
 
 // Seleciona os elementos da lista.
 const expenseList = document.querySelector(`ul`);
+const expenseQuantity = document.querySelector(`aside header p span`);
 
 // Captura o evento de input para formatar o valor
 amount.oninput = () => {
@@ -30,6 +31,7 @@ function formatCurrencyBRL(value) {
   return value;
 }
 
+// Captura o evento de submit do formulario para obter os valores.
 form.onsubmit = (event) => {
   event.preventDefault();
 
@@ -47,6 +49,7 @@ form.onsubmit = (event) => {
   expenseAdd(newExpense);
 };
 
+// Adiciona um novo item na lista
 function expenseAdd(newExpense) {
   try {
     // Cria o elemento de li para adicionar o item na lista.
@@ -73,14 +76,55 @@ function expenseAdd(newExpense) {
     // Adiciona nome e categoria dentro da div das informações de despesa.
     expenseInfo.append(expenseName, expenseCategory);
 
-     //Adiciona as informações no item.
-     expenseItem.append(expenseIcon, expenseInfo);
+    //Cria o valor da despesa.
+    const expenseAmount = document.createElement(`span`);
+    expenseAmount.classList.add(`expense-info`);
+    expenseAmount.innerHTML = `<small>R$</small>${newExpense.amount
+      .toUpperCase()
+      .replace(`R$`, ``)}`;
+
+    // Cria o icone de remover
+    const removeIcon = document.createElement(`img`);
+    removeIcon.classList.add(`remove-icon`);
+    removeIcon.setAttribute(`src`, `img/remove.svg`);
+    removeIcon.setAttribute(`alt`, `Icone de remover`);
+
+    //Adiciona as informações no item.
+    expenseItem.append(expenseIcon, expenseInfo, expenseAmount, removeIcon);
 
     // Adiciona o item na lista.
     expenseList.append(expenseItem);
-  } 
-  catch (error) {
+
+    // Atualiza os totais.
+    updateTotals();
+  } catch (error) {
     alert(`Não foi possivel atualizar a lista de despesas.`);
     console.log(error);
+  }
+}
+
+// Atualiza os totais.
+function updateTotals() {
+  try {
+    // Recupera todos os itens (li) da lista (ul)
+    const items = expenseList.children;
+
+    // Atualiza a quantidade de itens da lista.
+    expenseQuantity.textContent = `${items.length} ${
+      items.length > 1 ? `Despesas` : `Despesa`
+    }`;
+
+    // Variavel para incrementar o total
+    let total = 0;
+
+    // Percorre cada item da lista
+    for (let item = 0; item < items.length; item++) {
+      const itemAmount = items[item].querySelector(`.expense-amount`)
+
+      console.log(itemAmount)
+    }
+  } catch (error) {
+    console.log(error);
+    alert(`Não foi possivel atualizar os totais`);
   }
 }

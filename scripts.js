@@ -7,7 +7,7 @@ const category = document.querySelector(`#category`);
 // Seleciona os elementos da lista.
 const expenseList = document.querySelector(`ul`);
 const expenseQuantity = document.querySelector(`aside header p span`);
-const expensesTotals = document.querySelector(`aside header h2`)
+const expensesTotals = document.querySelector(`aside header h2`);
 
 // Captura o evento de input para formatar o valor
 amount.oninput = () => {
@@ -96,6 +96,9 @@ function expenseAdd(newExpense) {
     // Adiciona o item na lista.
     expenseList.append(expenseItem);
 
+    // Limpa os inputs após envio.
+    formClear();
+
     // Atualiza os totais.
     updateTotals();
   } catch (error) {
@@ -120,38 +123,64 @@ function updateTotals() {
 
     // Percorre cada item da lista
     for (let item = 0; item < items.length; item++) {
-      const itemAmount = items[item].querySelector(`.expense-amount`)
+      const itemAmount = items[item].querySelector(`.expense-amount`);
 
       // Remover caracteres não númericos e substitui a virgula por ponto.
-      let value = itemAmount.textContent.replace(/[^\d,]/g, ``).replace(`,`, ".");
+      let value = itemAmount.textContent
+        .replace(/[^\d,]/g, ``)
+        .replace(`,`, ".");
 
       // Converte o valor para float.
-      value = parseFloat(value)
+      value = parseFloat(value);
 
       // Verifica se é um numero válido
-      if(isNaN(value)) {
-        return alert(`Não foi possivel calcular o total. O valor não parece ser um número`)
+      if (isNaN(value)) {
+        return alert(
+          `Não foi possivel calcular o total. O valor não parece ser um número`
+        );
       }
 
       // Incrementar valor total
-      total += Number(value)
+      total += Number(value);
     }
 
     // Cria a span para adicionar o R$ formatado
-    const symbolBRL = document.createElement(`small`)
-    symbolBRL.textContent = `R$`
+    const symbolBRL = document.createElement(`small`);
+    symbolBRL.textContent = `R$`;
 
     // Formata o valor e remove o R$ que será exibido pela small com um estilo customizado
-    total = formatCurrencyBRL(total).toUpperCase().replace("R$", ``)
+    total = formatCurrencyBRL(total).toUpperCase().replace("R$", ``);
 
     // Limpa o conte´´udo do elemento.
-    expensesTotals.innerHTML = ``
-    
-    // Adiciona o simbolo da moeda e o valor total formatado
-    expensesTotals.append(symbolBRL, total)
+    expensesTotals.innerHTML = ``;
 
+    // Adiciona o simbolo da moeda e o valor total formatado
+    expensesTotals.append(symbolBRL, total);
   } catch (error) {
     console.log(error);
     alert(`Não foi possivel atualizar os totais`);
   }
+}
+
+// Evento que captura o clique nos itens da lista
+expenseList.addEventListener(`click`, function (event) {
+  // Verifica se o elemento clicado é o icone de remover
+  if (event.target.classList.contains(`remove-icon`)) {
+    // Obtém a li pai do elemento clicado.
+    const item = event.target.closest(`.expense`);
+
+    // Remove o item da lista
+    item.remove();
+  }
+
+  // Atualiza o total
+  updateTotals();
+});
+
+function formClear() {
+  expense.value = ``;
+  category.value = ``;
+  amount.value = ``;
+
+  expense.focus();
 }

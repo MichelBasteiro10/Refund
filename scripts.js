@@ -7,6 +7,7 @@ const category = document.querySelector(`#category`);
 // Seleciona os elementos da lista.
 const expenseList = document.querySelector(`ul`);
 const expenseQuantity = document.querySelector(`aside header p span`);
+const expensesTotals = document.querySelector(`aside header h2`)
 
 // Captura o evento de input para formatar o valor
 amount.oninput = () => {
@@ -78,7 +79,7 @@ function expenseAdd(newExpense) {
 
     //Cria o valor da despesa.
     const expenseAmount = document.createElement(`span`);
-    expenseAmount.classList.add(`expense-info`);
+    expenseAmount.classList.add(`expense-amount`);
     expenseAmount.innerHTML = `<small>R$</small>${newExpense.amount
       .toUpperCase()
       .replace(`R$`, ``)}`;
@@ -121,8 +122,34 @@ function updateTotals() {
     for (let item = 0; item < items.length; item++) {
       const itemAmount = items[item].querySelector(`.expense-amount`)
 
-      console.log(itemAmount)
+      // Remover caracteres não númericos e substitui a virgula por ponto.
+      let value = itemAmount.textContent.replace(/[^\d,]/g, ``).replace(`,`, ".");
+
+      // Converte o valor para float.
+      value = parseFloat(value)
+
+      // Verifica se é um numero válido
+      if(isNaN(value)) {
+        return alert(`Não foi possivel calcular o total. O valor não parece ser um número`)
+      }
+
+      // Incrementar valor total
+      total += Number(value)
     }
+
+    // Cria a span para adicionar o R$ formatado
+    const symbolBRL = document.createElement(`small`)
+    symbolBRL.textContent = `R$`
+
+    // Formata o valor e remove o R$ que será exibido pela small com um estilo customizado
+    total = formatCurrencyBRL(total).toUpperCase().replace("R$", ``)
+
+    // Limpa o conte´´udo do elemento.
+    expensesTotals.innerHTML = ``
+    
+    // Adiciona o simbolo da moeda e o valor total formatado
+    expensesTotals.append(symbolBRL, total)
+
   } catch (error) {
     console.log(error);
     alert(`Não foi possivel atualizar os totais`);
